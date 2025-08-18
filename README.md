@@ -1,32 +1,39 @@
-# _Sample project_
+# MinoSweeper
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+MinoSweeper (LGPL) is a project created as part of the "Introduction to Embedded Programming" classes, in order to acquire a grade.
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+The name "MinoSweeper" was chosen to represent the idea of Classic NES Tetris using an ESP32-C3-DevKitM-1 circuit board, the NES Controller for controls, A PBM (Passive Buzzer Module) and an LCD 240x320 IPS display to graphically render the game.
+
+## Hardware Components
+
+The following hardware components were used:
+
+* [ESP32-C3-DevKitM-1](https://amzn.eu/d/9a1SwUs)
+* USB-A to Micro-USB-B Cable (Power for ESP32-C3-DevKitM-1)
+* [NES Extension Cord](https://www.micomputer.es/en/nes/450-super-nintendo-extension-cable.html)
+* [WaveShare 2-inch LCD Display (240x320 IPS, 3.3V with SPI Interface)](https://www.waveshare.com/wiki/2inch_LCD_Module)
+* [Passive Buzzer Module](https://www.az-delivery.de/products/buzzer-modul-passiv)
+* Male-To-Male Pin Connectors
+* Breadboard
+* Soldering Equipment
+
+---
+
+## Explanation of NES Controller Communication
+
+The NES console uses a polling mechanism instead of interupts, with a frequency of 60Hz (this coincides with NES consoles rendering at 60FPS). Inside the controller is an internal 8-bit parallel-to-serial shift register (4021 IC). This allows to have all eight button states to be latched into the register simultaneously (parallel) and then read out one bit at the time (serial). [[1]](https://www.nesdev.org/wiki/Standard_controller#Hardware)
+
+The NES console sends out a short HIGH-signal (12µs) through the Latch wire to the controller. This causes the shift register to store all eight button states simultaneously. After 6µs, the NES sends 8 HIGH-signals through the Clock wire to the controller, 12µs per full cycle, 50% duty cycle. At each clock cycle, the button states are read out from the shift register bit-by-bit in the following sequence: A, B, Select, Start, Up, Down, Left, Right. Data will assert ground if a button was pressed (= negative true). [[2]](https://tresi.github.io/nes/)
+
+[![NES Controller Pinout](documentation/images/nes-data.gif)](https://tresi.github.io/nes/nes-data.gif)
 
 
+### Figuring out the NES extension cord pinout
 
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
+Given that there was no pinout issued by the manufacturer, it was required to open up the female end of the extension cord. For that, we need to look at the actual NES Controller pinout, so we can compare and figure out which wire is which.
 
-## Example folder contents
+[![NES Controller Pinout](documentation/images/nes-controller-pinout.png)](http://psmay.com/wp-content/uploads/2011/10/nes-controller-pinout.png)
 
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
+Based on this, we can look at the pinout at the female end from the extension cord.
 
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
-
-Below is short explanation of remaining files in the project folder.
-
-```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+![NES Extension Cord Pinout](documentation/images/open_extension_cord_female_end.png)
