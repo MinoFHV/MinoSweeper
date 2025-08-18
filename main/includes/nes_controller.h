@@ -1,5 +1,6 @@
 #pragma once
 
+#include <esp_err.h>
 #include <stdint.h>
 
 
@@ -25,5 +26,5 @@
 #define BUTTON_RIGHT_BITPOS         7
 
 
-void nes_controller_init();
+esp_err_t nes_controller_init();
 uint8_t nes_controller_read();

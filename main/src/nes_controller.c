@@ -5,6 +5,9 @@
 #include "nes_controller.h"
 
 
+const static char *TAG = "NES_CONTROLLER";
+
+
 void nes_controller_init()
 {
 
@@ -41,9 +44,27 @@ void nes_controller_init()
     // ToDo: GPIO Config Error Handling!
 
     // Active the GPIO Configurations
-    gpio_config(&gpioLatchConfig);
-    gpio_config(&gpioClockConfig);
-    gpio_config(&gpioDataConfig);
+    esp_err_t ret = ESP_OK;
+    ret = gpio_config(&gpioLatchConfig);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to configure Latch GPIO");
+        return ret;
+    }
+    ret = gpio_config(&gpioClockConfig);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to configure Clock GPIO");
+        return ret;
+    }
+    ret = gpio_config(&gpioDataConfig);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to configure Data GPIO");
+        return ret;
+    }
+
+    return ESP_OK;
 
 }
 

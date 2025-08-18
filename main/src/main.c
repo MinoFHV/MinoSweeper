@@ -24,7 +24,9 @@ void app_main(void)
     init_ret = lcd_st7789_init();
     if (init_ret != ESP_OK) return;
 
-    nes_controller_init();
+    init_ret = nes_controller_init();
+    if (init_ret != ESP_OK) return;
+
     gamelogic_init();
 
     static uint16_t framebuffer[LCD_WIDTH * LCD_HEIGHT] = {0};
@@ -45,24 +47,28 @@ void app_main(void)
         uint8_t pressed_buttons = button_state & ~last_button_state;
         game_logic_state_t current_game_state = gamelogic_get_state();
 
+        // If game state has changed, play appropriate sound
         if (current_game_state != previous_game_state)
         {
             if (current_game_state == GAME_STATE_WON) { sound_module_play_win_melody(); }
             else if (current_game_state == GAME_STATE_LOST) { sound_module_play_lose_melody(); }
         }
-        
+
+        // Otherwise, if still playing, update previous state
         previous_game_state = current_game_state;
 
         if (current_game_state == GAME_STATE_PLAYING)
         {
 
+            // Reset repeat timer if no button is pressed
             if (button_state == 0) repeat_timer = 0;
 
             if ((button_state != 0) && (repeat_timer == 0))
             {
 
                 moved = false;
-                
+
+                // Update cursor position based on button presses
                 if (button_state & (1 << BUTTON_UP_BITPOS)) { if (cursor_y > 0) { cursor_y--; moved = true; } }
                 else if (button_state & (1 << BUTTON_DOWN_BITPOS)) { if (cursor_y < (BOARD_DIMENSION_X_Y - 1)) { cursor_y++; moved = true; } }
                 else if (button_state & (1 << BUTTON_LEFT_BITPOS)) { if (cursor_x > 0) { cursor_x--; moved = true; } }
@@ -77,6 +83,7 @@ void app_main(void)
             }
             else if (repeat_timer > 0) { repeat_timer--; }
 
+            // Handle button presses for Reveal / Flag Toggle
             if (pressed_buttons & (1 << BUTTON_A_BITPOS)) gamelogic_reveal_cell(cursor_x, cursor_y);
             else if (pressed_buttons & (1 << BUTTON_B_BITPOS)) gamelogic_toggle_flag(cursor_x, cursor_y);
 
@@ -84,6 +91,7 @@ void app_main(void)
         else
         {
 
+            // Restart Game
             if (pressed_buttons & (1 << BUTTON_START_BITPOS))
             {
 
@@ -95,8 +103,10 @@ void app_main(void)
 
         }
 
+        // Update last button state
         last_button_state = button_state;
 
+        // Render the game field and cursor
         gamerender_draw_field(framebuffer);
         if (gamelogic_get_state() == GAME_STATE_PLAYING) gamerender_draw_cursor(framebuffer, cursor_x, cursor_y);
         lcd_st7789_draw_framebuffer(framebuffer);

@@ -61,6 +61,7 @@ void sound_module_beep(uint16_t frequency, uint16_t duration_ms)
 void sound_module_play_win_melody()
 {
 
+    // Final Fantasy Victory Fanfare
     sound_module_beep(2093, 117);
     vTaskDelay(pdMS_TO_TICKS(50));
     sound_module_beep(2093, 117);
@@ -84,6 +85,7 @@ void sound_module_play_win_melody()
 void sound_module_play_lose_melody()
 {
 
+    // Super Mario Bros Death Theme
     sound_module_beep(1975, 150);
     vTaskDelay(pdMS_TO_TICKS(50));
     sound_module_beep(2794, 150);
