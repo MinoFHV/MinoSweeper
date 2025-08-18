@@ -3,6 +3,7 @@ idf_component_register(
         "src/main.c"
         "src/nes_controller.c"
         "src/sound_module.c"
+        "src/gamelogic.c"
     INCLUDE_DIRS
         "includes"
 )
