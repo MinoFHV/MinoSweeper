@@ -45,6 +45,14 @@ void app_main(void)
         uint8_t pressed_buttons = button_state & ~last_button_state;
         game_logic_state_t current_game_state = gamelogic_get_state();
 
+        if (current_game_state != previous_game_state)
+        {
+            if (current_game_state == GAME_STATE_WON) { sound_module_play_win_melody(); }
+            else if (current_game_state == GAME_STATE_LOST) { sound_module_play_lose_melody(); }
+        }
+        
+        previous_game_state = current_game_state;
+
         if (current_game_state == GAME_STATE_PLAYING)
         {
 
@@ -87,22 +95,11 @@ void app_main(void)
 
         }
 
-        // Update last state at the end of the input block
         last_button_state = button_state;
 
-        current_game_state = gamelogic_get_state();
-        previous_game_state = current_game_state;
-
         gamerender_draw_field(framebuffer);
-        if (current_game_state == GAME_STATE_PLAYING) gamerender_draw_cursor(framebuffer, cursor_x, cursor_y);
+        if (gamelogic_get_state() == GAME_STATE_PLAYING) gamerender_draw_cursor(framebuffer, cursor_x, cursor_y);
         lcd_st7789_draw_framebuffer(framebuffer);
-
-        // Play sound based on game state change
-        if (current_game_state != previous_game_state)
-        {
-            if (current_game_state == GAME_STATE_WON) { sound_module_play_win_melody(); }
-            else if (current_game_state == GAME_STATE_LOST) { sound_module_play_lose_melody(); }
-        }
 
         vTaskDelay(pdMS_TO_TICKS(33));
 
