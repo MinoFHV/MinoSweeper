@@ -21,7 +21,7 @@ void gamerender_draw_field(uint16_t *framebuffer)
     uint16_t box_y = 0;
     uint8_t box_size = 0;
 
-    cell_state_t state = NULL;
+    cell_state_t state = 0;
     char content = 0;
 
     // Iterate through the board and draw each cell based on its state
