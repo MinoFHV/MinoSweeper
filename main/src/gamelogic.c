@@ -4,7 +4,7 @@
 #include <esp_random.h>
 
 
-static char game_board[BOARD_HEIGHT][BOARD_WIDTH] = {0};
+static char game_board[BOARD_DIMENSION_X_Y][BOARD_DIMENSION_X_Y] = {0};
 
 void game_logic_init()
 {
@@ -17,8 +17,8 @@ void game_logic_init()
     while (bomb_count < BOMB_AMOUNT)
     {
 
-        bomb_x = esp_random() % BOARD_WIDTH;
-        bomb_y = esp_random() % BOARD_HEIGHT;
+        bomb_x = esp_random() % BOARD_DIMENSION_X_Y;
+        bomb_y = esp_random() % BOARD_DIMENSION_X_Y;
 
         if (game_board[bomb_y][bomb_x] != 'x')
         {
@@ -31,13 +31,13 @@ void game_logic_init()
     }
 
     uint8_t adjacent_bombs = 0;
-    uint8_t check_x = 0;
-    uint8_t check_y = 0;
+    int8_t check_x = 0;
+    int8_t check_y = 0;
 
     // Go through the entire board
-    for (uint8_t y = 0; y < BOARD_HEIGHT; ++y)
+    for (uint8_t y = 0; y < BOARD_DIMENSION_X_Y; ++y)
     {
-        for (uint8_t x = 0; x < BOARD_WIDTH; ++x)
+        for (uint8_t x = 0; x < BOARD_DIMENSION_X_Y; ++x)
         {
 
             // Only calculate if cell is 0
@@ -58,7 +58,7 @@ void game_logic_init()
                         check_y = y + nearby_y;
 
                         // Check if the neighbouring cell is within bounds
-                        if ((check_y >= 0) && (check_y < BOARD_HEIGHT) && (check_x >= 0) && (check_x < BOARD_WIDTH))
+                        if ((check_y >= 0) && (check_y < BOARD_DIMENSION_X_Y) && (check_x >= 0) && (check_x < BOARD_DIMENSION_X_Y))
                         {
                             // Check if the neighbouring cell is a bomb
                             if (game_board[check_y][check_x] == 'x')

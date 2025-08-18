@@ -4,6 +4,8 @@ idf_component_register(
         "src/nes_controller.c"
         "src/sound_module.c"
         "src/gamelogic.c"
+        "src/gamerender.c"
+        "src/lcd_st7789_driver.c"
     INCLUDE_DIRS
         "includes"
 )

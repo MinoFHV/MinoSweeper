@@ -3,11 +3,10 @@
 #include <inttypes.h>
 
 
-#define BOARD_WIDTH         13
-#define BOARD_HEIGHT        13
+#define BOARD_DIMENSION_X_Y        13
 
 #define BOMB_PERCENTAGE     0.15
-#define BOMB_AMOUNT         ((uint8_t)(BOARD_WIDTH * BOARD_HEIGHT) * BOMB_PERCENTAGE)
+#define BOMB_AMOUNT         ((uint8_t)(BOARD_DIMENSION_X_Y * BOARD_DIMENSION_X_Y) * BOMB_PERCENTAGE)
 
 
 typedef enum
