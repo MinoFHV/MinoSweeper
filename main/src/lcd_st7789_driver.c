@@ -1,4 +1,5 @@
 #include "lcd_st7789_driver.h"
+#include "font.h"
 
 #include <driver/spi_master.h>
 #include <driver/gpio.h>
@@ -129,29 +130,119 @@ void lcd_st7789_draw_framebuffer(const uint16_t *framebuffer)
 {
 
     esp_err_t ret = esp_lcd_panel_draw_bitmap(esp_lcd_panel_handle, 0, 0, LCD_WIDTH, LCD_HEIGHT, framebuffer);
-    if (ret != ESP_OK)
+    if (ret != ESP_OK) ESP_LOGE(TAG, "Failed to draw framebuffer: %s", esp_err_to_name(ret));
+
+}
+
+void lcd_st7789_draw_box(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, uint16_t color_border, uint16_t color_fill)
+{
+
+    for (uint16_t pixel_y = y; pixel_y < y + height; pixel_y++)
     {
-        ESP_LOGE(TAG, "Failed to draw framebuffer: %s", esp_err_to_name(ret));
+        for (uint8_t pixel_x = x; pixel_x < x + width; pixel_x++)
+        {
+            
+            if ((pixel_x == x) || (pixel_x == x + width - 1) || (pixel_y == y) || (pixel_y == y + height - 1)) 
+            {
+                framebuffer[(pixel_y * LCD_WIDTH) + pixel_x] = color_border;
+            }
+            else framebuffer[(pixel_y * LCD_WIDTH) + pixel_x] = color_fill;
+
+        }
     }
 
 }
 
-void lcd_st7789_draw_box(uint16_t *framebuffer, int x, int y, int width, int height, uint16_t color_border, uint16_t color_fill)
+void lcd_st7789_draw_cursor_box(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, uint16_t color_cursor)
 {
-
-    for (int pixel_y = y; pixel_y < y + height; pixel_y++)
+    
+    for (uint8_t i = 0; i < 2; i++)
     {
-        for (int pixel_x = x; pixel_x < x + width; pixel_x++)
+        for (uint16_t pixel_y = y + i; pixel_y < y + height - i; pixel_y++)
         {
-            if ((pixel_x == x) || (pixel_x == x + width - 1) || (pixel_y == y) || (pixel_y == y + height - 1))
+            for (uint8_t pixel_x = x + i; pixel_x < x + width - i; pixel_x++)
             {
-                framebuffer[(pixel_y * LCD_WIDTH) + pixel_x] = color_border;
-            }
-            else
-            {
-                framebuffer[(pixel_y * LCD_WIDTH) + pixel_x] = color_fill;
+                if ((pixel_x == x + i) || (pixel_x == x + width - 1 - i) || (pixel_y == y + i) || (pixel_y == y + height - 1 - i))
+                {
+                    framebuffer[(pixel_y * LCD_WIDTH) + pixel_x] = color_cursor;
+                }
             }
         }
     }
+}
 
+void lcd_st7789_draw_digit(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, char digit, uint16_t color)
+{
+
+    if (digit < '1' || digit > '8')  return;
+
+    // Get the bitmap for the specific digit
+    const uint8_t* font_char = font_digits[digit - '1'];
+
+    // Center the 8x12 character in the cell
+    uint8_t start_x = x + (width - 8) / 2;
+    uint16_t start_y = y + (height - 12) / 2;
+
+    for (uint8_t row = 0; row < 12; row++)
+    {
+
+        uint8_t row_pixels = font_char[row];
+        for (uint8_t col = 0; col < 8; col++)
+        {
+            // Check if the pixel is set in the font data
+            if ((row_pixels << col) & 0x80) framebuffer[(start_y + row) * LCD_WIDTH + (start_x + col)] = color;
+        }
+
+    }
+
+}
+
+void lcd_st7789_draw_flag(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, uint16_t color)
+{
+    
+    // Draw a simple flag shape
+    uint8_t pole_x = x + width / 4;
+    uint16_t top_y = y + height / 4;
+    uint16_t bottom_y = y + (height * 3) / 4;
+
+    // Pole
+    for (uint16_t pixel_y = top_y; pixel_y <= bottom_y; ++pixel_y)
+    {
+        framebuffer[(pixel_y * LCD_WIDTH) + pole_x] = color;
+    }
+
+    // Flag triangle
+    for (uint16_t pixel_y = top_y; pixel_y <= y + height / 2; ++pixel_y)
+    {
+        for (uint8_t pixel_x = pole_x; pixel_x < x + (width * 3) / 4; ++pixel_x)
+        {
+            if ((pixel_x - pole_x) < (pixel_y - top_y)) framebuffer[(pixel_y * LCD_WIDTH) + pixel_x] = color;
+        }
+    }
+
+}
+
+void lcd_st7789_draw_bomb(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, uint16_t color)
+{
+
+    // Draw a simple bomb (circle)
+    uint8_t center_x = x + width / 2;
+    uint16_t center_y = y + height / 2;
+    uint8_t radius = width / 4;
+
+    int16_t distance_x = 0;
+    int16_t distance_y = 0;
+
+    for (uint16_t pixel_y = y; pixel_y < y + height; ++pixel_y)
+    {
+        for (uint8_t pixel_x = x; pixel_x < x + width; ++pixel_x)
+        {
+
+            distance_x = pixel_x - center_x;
+            distance_y = pixel_y - center_y;
+            if ((distance_x * distance_x) + (distance_y * distance_y) < (radius * radius)) framebuffer[(pixel_y * LCD_WIDTH) + pixel_x] = color;
+
+        }
+    }
+    
 }

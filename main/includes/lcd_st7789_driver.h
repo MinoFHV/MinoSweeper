@@ -18,7 +18,8 @@
 
 esp_err_t lcd_st7789_init();
 void lcd_st7789_draw_framebuffer(const uint16_t *framebuffer);
-void lcd_st7789_draw_box(uint16_t *framebuffer, int x, int y, int width, int height, uint16_t color_border, uint16_t color_fill);
-void lcd_st7789_draw_digit(uint16_t *framebuffer, int x, int y, int width, int height, uint16_t color_cursor);
-void lcd_st7789_draw_flag(uint16_t *framebuffer, int x, int y, int width, int height, uint16_t color);
-void lcd_st7789_draw_bomb(uint16_t *framebuffer, int x, int y, int width, int height, uint16_t color);
+void lcd_st7789_draw_box(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, uint16_t color_border, uint16_t color_fill);
+void lcd_st7789_draw_cursor_box(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, uint16_t color_cursor);
+void lcd_st7789_draw_digit(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, char digit, uint16_t color);
+void lcd_st7789_draw_flag(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, uint16_t color);
+void lcd_st7789_draw_bomb(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, uint16_t color);

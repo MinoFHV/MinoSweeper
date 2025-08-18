@@ -1,16 +1,20 @@
 #include "gamelogic.h"
 #include "gamerender.h"
 #include "lcd_st7789_driver.h"
+#include "nes_controller.h"
 #include "sound_module.h"
 
 #include <esp_err.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 #include <stdio.h>
+
+
+#define REPEAT_DELAY_FRAMES     1
+
 
 void app_main(void)
 {
-
-    // Framebuffer for LCD Screen
-    static uint16_t framebuffer[LCD_WIDTH * LCD_HEIGHT] = {0};
 
     esp_err_t init_ret = ESP_OK;
 
@@ -20,10 +24,88 @@ void app_main(void)
     init_ret = lcd_st7789_init();
     if (init_ret != ESP_OK) return;
 
-    game_logic_init();
-    gamerender_draw_field(framebuffer);
+    nes_controller_init();
+    gamelogic_init();
 
-    
-    lcd_st7789_draw_framebuffer(framebuffer);
+    static uint16_t framebuffer[LCD_WIDTH * LCD_HEIGHT] = {0};
+
+    uint8_t cursor_x = 0;
+    uint8_t cursor_y = 0;
+    uint8_t button_state = 0;
+    uint8_t repeat_timer = 0;
+    bool moved = false;
+
+    game_logic_state_t previous_game_state = GAME_STATE_PLAYING;
+    uint8_t last_button_state = 0;
+
+    while (1)
+    {
+
+        button_state = nes_controller_read();
+        uint8_t pressed_buttons = button_state & ~last_button_state;
+        game_logic_state_t current_game_state = gamelogic_get_state();
+
+        if (current_game_state == GAME_STATE_PLAYING)
+        {
+
+            if (button_state == 0) repeat_timer = 0;
+
+            if ((button_state != 0) && (repeat_timer == 0))
+            {
+
+                moved = false;
+                
+                if (button_state & (1 << BUTTON_UP_BITPOS)) { if (cursor_y > 0) { cursor_y--; moved = true; } }
+                else if (button_state & (1 << BUTTON_DOWN_BITPOS)) { if (cursor_y < (BOARD_DIMENSION_X_Y - 1)) { cursor_y++; moved = true; } }
+                else if (button_state & (1 << BUTTON_LEFT_BITPOS)) { if (cursor_x > 0) { cursor_x--; moved = true; } }
+                else if (button_state & (1 << BUTTON_RIGHT_BITPOS)) { if (cursor_x < (BOARD_DIMENSION_X_Y - 1)) { cursor_x++; moved = true; } }
+                
+                if (moved)
+                {
+                    sound_module_beep(1760, 50);
+                    repeat_timer = REPEAT_DELAY_FRAMES;
+                }
+
+            }
+            else if (repeat_timer > 0) { repeat_timer--; }
+
+            if (pressed_buttons & (1 << BUTTON_A_BITPOS)) gamelogic_reveal_cell(cursor_x, cursor_y);
+            else if (pressed_buttons & (1 << BUTTON_B_BITPOS)) gamelogic_toggle_flag(cursor_x, cursor_y);
+
+        }
+        else
+        {
+
+            if (pressed_buttons & (1 << BUTTON_START_BITPOS))
+            {
+
+                gamelogic_init();
+                cursor_x = 0;
+                cursor_y = 0;
+
+            }
+
+        }
+
+        // Update last state at the end of the input block
+        last_button_state = button_state;
+
+        current_game_state = gamelogic_get_state();
+        previous_game_state = current_game_state;
+
+        gamerender_draw_field(framebuffer);
+        if (current_game_state == GAME_STATE_PLAYING) gamerender_draw_cursor(framebuffer, cursor_x, cursor_y);
+        lcd_st7789_draw_framebuffer(framebuffer);
+
+        // Play sound based on game state change
+        if (current_game_state != previous_game_state)
+        {
+            if (current_game_state == GAME_STATE_WON) { sound_module_play_win_melody(); }
+            else if (current_game_state == GAME_STATE_LOST) { sound_module_play_lose_melody(); }
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(33));
+
+    }
 
 }

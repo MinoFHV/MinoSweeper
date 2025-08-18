@@ -25,5 +25,5 @@
 #define BUTTON_RIGHT_BITPOS         7
 
 
-void nesControllerInit();
-uint8_t nesControllerRead();
+void nes_controller_init();
+uint8_t nes_controller_read();

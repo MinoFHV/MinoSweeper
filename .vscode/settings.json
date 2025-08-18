@@ -16,6 +16,9 @@
     "cstdint": "c",
     "esp_lcd_panel_ops.h": "c",
     "esp_lcd_panel_vendor.h": "c",
-    "lcd_st7789_driver.h": "c"
+    "lcd_st7789_driver.h": "c",
+    "sound_module.h": "c",
+    "gamerender.h": "c",
+    "task.h": "c"
   }
 }

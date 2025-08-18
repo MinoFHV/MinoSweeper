@@ -5,7 +5,7 @@
 #include "nes_controller.h"
 
 
-void nesControllerInit()
+void nes_controller_init()
 {
 
     // GPIO Config for Latch
@@ -38,6 +38,8 @@ void nesControllerInit()
         .intr_type = GPIO_INTR_DISABLE,
     };
 
+    // ToDo: GPIO Config Error Handling!
+
     // Active the GPIO Configurations
     gpio_config(&gpioLatchConfig);
     gpio_config(&gpioClockConfig);
@@ -45,7 +47,7 @@ void nesControllerInit()
 
 }
 
-uint8_t nesControllerRead()
+uint8_t nes_controller_read()
 {
 
     // Set Latch to HIGH for 12µs, wait for 6µs
