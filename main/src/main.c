@@ -47,7 +47,7 @@ void app_main(void)
         uint8_t pressed_buttons = button_state & ~last_button_state;
         game_logic_state_t current_game_state = gamelogic_get_state();
 
-        // If game state has changed, play appropriate sound
+        // Loop-Prevention: If game state has changed, play appropriate sound ONCE
         if (current_game_state != previous_game_state)
         {
             if (current_game_state == GAME_STATE_WON) { sound_module_play_win_melody(); }
