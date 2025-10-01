@@ -41,8 +41,6 @@ void nes_controller_init()
         .intr_type = GPIO_INTR_DISABLE,
     };
 
-    // ToDo: GPIO Config Error Handling!
-
     // Active the GPIO Configurations
     esp_err_t ret = ESP_OK;
     ret = gpio_config(&gpioLatchConfig);
