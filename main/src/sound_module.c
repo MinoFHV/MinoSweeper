@@ -7,6 +7,7 @@
 esp_err_t sound_module_init()
 {
 
+    // The Passive Buzzer Module requires Pulse Width Modulation (PWM) signals
     esp_err_t ret = ESP_OK;
 
     ledc_timer_config_t ledc_timer =
