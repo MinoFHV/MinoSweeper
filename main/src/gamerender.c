@@ -2,7 +2,7 @@
 #include "gamelogic.h"
 #include "lcd_st7789_driver.h"
 
-void gamerender_draw_field(uint16_t *framebuffer)
+void gamerender_draw_game_board(uint16_t *framebuffer)
 {
 
     uint16_t border_color = RGB565(255, 128, 0);

@@ -108,8 +108,8 @@ void app_main(void)
         // Update last button state
         last_button_state = button_state;
 
-        // Render the game field and cursor
-        gamerender_draw_field(framebuffer);
+        // Render the game board and cursor
+        gamerender_draw_game_board(framebuffer);
         if (gamelogic_get_state() == GAME_STATE_PLAYING) gamerender_draw_cursor(framebuffer, cursor_x, cursor_y);
         lcd_st7789_draw_framebuffer(framebuffer);
 
