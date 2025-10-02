@@ -4,6 +4,8 @@ MinoSweeper (LGPL) is a project created as part of the "Introduction to Embedded
 
 The name "MinoSweeper" was chosen to represent the idea of Minesweeper using an ESP32-C3-DevKitM-1 circuit board, the NES Controller for controls, A PBM (Passive Buzzer Module) and an LCD 240x320 IPS display to graphically render the game.
 
+[![NES Controller Pinout](documentation/images/setup.png)]
+
 ## Hardware Components
 
 The following hardware components were used:
