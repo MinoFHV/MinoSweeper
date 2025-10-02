@@ -142,6 +142,7 @@ void lcd_st7789_draw_box(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t w
         for (uint8_t pixel_x = x; pixel_x < x + width; pixel_x++)
         {
             
+            // Distinguish between border pixels and inside pixels
             if ((pixel_x == x) || (pixel_x == x + width - 1) || (pixel_y == y) || (pixel_y == y + height - 1)) 
             {
                 framebuffer[(pixel_y * LCD_WIDTH) + pixel_x] = color_border;
@@ -156,6 +157,7 @@ void lcd_st7789_draw_box(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t w
 void lcd_st7789_draw_cursor_box(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, uint16_t color_cursor)
 {
     
+    // 2-pixel thick border
     for (uint8_t i = 0; i < 2; i++)
     {
         for (uint16_t pixel_y = y + i; pixel_y < y + height - i; pixel_y++)
@@ -169,6 +171,7 @@ void lcd_st7789_draw_cursor_box(uint16_t *framebuffer, uint8_t x, uint16_t y, ui
             }
         }
     }
+
 }
 
 void lcd_st7789_draw_digit(uint16_t *framebuffer, uint8_t x, uint16_t y, uint8_t width, uint16_t height, char digit, uint16_t color)
