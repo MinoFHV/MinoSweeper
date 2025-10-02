@@ -23,7 +23,7 @@ The following hardware components were used:
 
 ## Software Architecture
 
-The project is organized into several modules, each with a specific responsibility. This separation of concerns makes the code easier to manage, debug, and extend.
+The project (ESP-IDF v5.4.0) is organized into several modules, each with a specific responsibility. This separation of concerns makes the code easier to manage, debug, and extend.
 
 *   `main.c`: The main entry point of the application. It contains the primary game loop, handles initialization of all modules, and processes player input.
 *   `gamelogic.c/h`: Manages the game's state. It is responsible for creating the board, placing bombs, handling the logic of revealing and flagging cells, and determining win/loss conditions. It has no knowledge of graphics or hardware.
