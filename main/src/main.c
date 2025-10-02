@@ -18,6 +18,7 @@ void app_main(void)
 
     esp_err_t init_ret = ESP_OK;
 
+    // Component Initialization
     init_ret = sound_module_init();
     if (init_ret != ESP_OK) return;
 
@@ -40,6 +41,7 @@ void app_main(void)
     game_logic_state_t previous_game_state = GAME_STATE_PLAYING;
     uint8_t last_button_state = 0;
 
+    // Game Loop
     while (1)
     {
 
