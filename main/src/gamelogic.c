@@ -106,7 +106,7 @@ cell_state_t gamelogic_get_player_cell_state(uint8_t x, uint8_t y)
     return player_board[y][x];
 }
 
-static void check_for_win()
+static void gamelogic_check_for_win()
 {
 
     for (uint8_t y = 0; y < BOARD_DIMENSION_X_Y; y++)
@@ -129,7 +129,7 @@ void gamelogic_toggle_flag(uint8_t x, uint8_t y)
     if (player_board[y][x] == CELL_STATE_HIDDEN) player_board[y][x] = CELL_STATE_FLAGGED;
     else if (player_board[y][x] == CELL_STATE_FLAGGED) player_board[y][x] = CELL_STATE_HIDDEN;
 
-    check_for_win();
+    gamelogic_check_for_win();
 
 }
 
@@ -170,7 +170,7 @@ game_logic_state_t gamelogic_reveal_cell(uint8_t x, uint8_t y)
         }
     }
 
-    check_for_win();
+    gamelogic_check_for_win();
     
     return current_state;
 
